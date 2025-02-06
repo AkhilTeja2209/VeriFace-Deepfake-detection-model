@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -49,6 +49,10 @@ train_real_dataset = create_dataset(train_real_path, 0)
 train_fake_dataset = create_dataset(train_fake_path, 1)
 
 # Combine datasets
+train_real_dataset = train_real_dataset.unbatch()
+train_fake_dataset = train_fake_dataset.unbatch()
+
+# Combine datasets
 train_dataset = train_real_dataset.concatenate(train_fake_dataset)
 
 # Shuffle the combined dataset
@@ -61,9 +65,8 @@ val_size = int(0.15 * dataset_size)   # 15% for validation
 test_size = dataset_size - train_size - val_size  # 15% for testing
 
 train_dataset = train_dataset.take(train_size)
-remaining_dataset = train_dataset.skip(train_size)
-val_dataset = remaining_dataset.take(val_size)
-test_dataset = remaining_dataset.skip(val_size)
+val_dataset = train_dataset.skip(train_size).take(val_size)
+test_dataset = train_dataset.skip(train_size + val_size).take(test_size)
 
 # Apply data preprocessing
 def preprocess_data(image, label):
@@ -75,6 +78,10 @@ def preprocess_data(image, label):
 train_dataset = train_dataset.map(preprocess_data)
 val_dataset = val_dataset.map(preprocess_data)
 test_dataset = test_dataset.map(preprocess_data)
+
+train_dataset = train_dataset.batch(32)
+val_dataset = val_dataset.batch(32)
+test_dataset = test_dataset.batch(32)
 
 # Cache and prefetch for better performance
 train_dataset = train_dataset.cache().prefetch(tf.data.AUTOTUNE)
@@ -92,7 +99,9 @@ base_model.trainable = False
 model = Sequential([
     base_model,
     GlobalAveragePooling2D(),
-    Dense(256, activation='relu'),
+    Dense(256),
+    BatchNormalization(),  
+    tf.keras.layers.ReLU(),
     Dropout(0.5),
     Dense(1, activation='sigmoid')
 ])
@@ -101,7 +110,7 @@ model = Sequential([
 optimizer=Adam(learning_rate=1e-3, clipnorm=1.0)
 model.compile(
     optimizer=optimizer,
-    loss='binary_crossentropy',
+    loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
     metrics=['accuracy']
 )
 
@@ -122,13 +131,15 @@ callbacks = [
     )
 ]
 
+
+
 # Train model
 try:
     history = model.fit(
         train_dataset,
-        epochs=20,
-        validation_data=val_dataset,  
-        callbacks=callbacks,
+        epochs=1,
+        validation_data=val_dataset,
+        callbacks=callbacks,  
         verbose=1
     )
 except Exception as e:
@@ -136,7 +147,7 @@ except Exception as e:
     raise
 
 # Final evaluation on test set
-test_loss, test_acc = model.evaluate(test_dataset)
+test_loss, test_acc = model.evaluate(train_dataset)
 print(f'Final Test Accuracy: {test_acc*100:.2f}%')
 
 # Save model

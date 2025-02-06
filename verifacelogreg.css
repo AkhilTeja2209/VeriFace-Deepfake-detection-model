@@ -1,0 +1,120 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    background-color: #b8f5ee;
+    color: #ffffff;
+}
+.header {
+    background-color:#011e26;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgb(69, 200, 191);
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo-img-small {
+    width: 70px;
+    height: 70px;
+}
+
+.logo-img-large {
+    width: 150px;
+    height: 30px;
+}
+.header .logo h1 {
+    margin: 0;
+}
+.nav ul {
+    list-style: none;
+    display: flex;
+}
+.nav ul li {
+    margin-right: 20px;
+    font-size: 18px; 
+    padding: 5px 8px; 
+    border-radius: 5px;
+}
+.nav ul li:hover {
+    font-size: 20px; 
+    background-color: #70cad8;
+}
+.nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+.form-container {
+    text-align: left;
+    background-color: #011e26;
+    padding: 32px;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+.form-container h1 {
+    text-align: left;
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+input {
+    width: 96%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #FF6F61;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #FF5733;
+}
+p {
+    text-align: center;
+}
+p a {
+    color: #FF6F61;
+    text-decoration: none;
+    font-weight: bold;
+}
+.hero {
+    text-align: center;
+    padding: 50px 30px;
+    background-color: #e0f7fa;
+    color: #FF6F61;
+}
+.cta-button {
+    display: inline-block;
+    background-color: #FF6F61;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.cta-button:hover {
+    background-color: #FF5733;
+}
